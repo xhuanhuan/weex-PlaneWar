@@ -1,0 +1,17 @@
+<template>
+    <div style="flex-direction: row;">
+      <text>{{title}}</text>
+    </div>
+  </template>
+  <script>
+    module.exports = {
+      data: {
+        title: null
+      },
+      methods: {
+        setTitle: function (text) {
+          this.title = text
+        }
+      }
+    }
+  </script>

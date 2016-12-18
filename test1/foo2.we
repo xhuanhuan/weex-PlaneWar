@@ -1,0 +1,22 @@
+<template>
+  <div>
+    <image src="{{imageUrl}}" class="thumb" onclick="test"></image>
+    <text>{{title}}</text>
+  </div>
+</template>
+<style>
+  .thumb { width: 200; height: 200; }
+</style>
+<script>
+  module.exports = {
+    data: {
+      title: '',
+      imageUrl: ''
+    },
+    methods: {
+      test: function () {
+        this._parent.$emit('notify', {a: 1})
+      }
+    }
+  }
+</script>

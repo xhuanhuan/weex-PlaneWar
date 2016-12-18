@@ -1,0 +1,158 @@
+<template>
+  <div>
+     <text class="text">The time is {{datetime}}</text>
+     <text class="text" style="font-size: {{size}}">{{title}}</text>
+     <text class="text">{{getTitle()}}</text>
+     <text class="text" onclick="changeName">{{fullName}}</text>
+     <div style="flex-direction: column;">
+       <text onclick="toggle">Toggle:{{shown}}</text>
+       <image if="shown" src="{{imageUrl}}" class="logo"></image>
+     </div>
+
+
+        <text>----</text>
+
+        <div repeat="person in list" class="{{person.gender}}">
+          <text>{{$index}} - {{person.id}} - {{person.nickname}}</text>
+        </div>
+
+        <text>----</text>
+
+        <div repeat="person in list" class="{{person.gender}}" track-by="id">
+          <text>{{$index}} - {{person.id}} - {{person.nickname}}</text>
+        </div>
+
+        <text>----</text>
+
+        <!-- something wrong here: duplicated track-by value -->
+        <div repeat="person in list" class="{{person.gender}}" track-by="nickname">
+          <text>{{$index}} - {{person.id}} - {{person.nickname}}</text>
+        </div>
+
+        <text>----</text>
+
+     <div>
+       <text onclick="update(1, 2)">Result: {{Result}}</text>
+     </div>
+
+  <text>---------append(渲染过程node(逐条)/tree（同时）)-----------</text>
+     <div>
+           <text>Hello</text>
+           <text>Weex</text>
+         </div>
+         <div append="node">
+           <text>Hello</text>
+           <text>Weex</text>
+         </div>
+         <div append="tree">
+           <text>Hello</text>
+           <text>Weex</text>
+         </div>
+
+ <text>---------获取子组件this.$el(id)---dom.scrollToElement()--------</text>
+         <div>
+           <text id="goto-top">Top</text>
+           <div style="height: 10; background-color: #999999;"></div>
+           <text onclick="back2Top">Back to Top</text>
+        </div>
+<text>---------获取自定义子组件的上下文this.$vm(id)--------</text>
+        <div>
+            <foo1 id="sub1" title="Hello"></foo1>
+            <text onclick="update">Click Me to Update</text>
+          </div>
+<text>---子组件向父组件通信this._parent;创建自定义事件：this.$emit(type, detail)；监听自定义事件：this.$on(type, handler) 和 this.$off(type[, handler])--------</text>
+          <div>
+            <foo2 title="Hello" image-url="https://gtms02.alicdn.com/tps/i2/TB1QHKjMXXXXXadXVXX20ySQVXX-512-512.png"></foo2>
+            <text if="eventType">event: {{eventType}} - {{eventDetail}}</text>
+          </div>
+<text>-----从父组件向子组件通信:this.$vm(id) 找到父组件,再调用 this.$vm(id).$emit(type, detail) 方法-----</text>
+        <div>
+           <foo3 id="sub3"></foo3>
+           <text onclick="test">click to update foo</text>
+         </div>
+
+
+  </div>
+</template>
+
+<style>
+  .text{
+    font-size:20px;
+    color:red;
+  }
+  .logo { width: 100; height: 100; }
+  .male { background-color: #9999ff; }
+  .female { background-color: #ff9999; }
+</style>
+
+<script>
+var dom = require('@weex-module/dom');
+  module.exports={
+  data: {
+    Result: '<empty>',
+     title: 'Alibaba',
+     size:25,
+     datetime: null,
+     firstName: 'John',
+     lastName: 'Smith',
+     shown: true,
+     list: [
+      { id: 11, gender: 'male', nickname: 'Li Lei' },
+      { id: 12, gender: 'female', nickname: 'Han Meimei' },
+      { id: 33, gender: 'male', nickname: 'Jim Green' }
+    ],
+     imageUrl: '/1.jpg',
+     word: 'Hello static',
+     eventType: '',
+     eventDetail: {},
+   },
+   computed: {
+     fullName: {
+     get: function() {
+         return this.firstName + ' ' + this.lastName
+       },
+
+       set: function(v) {
+         var s = v.split(' ')
+         this.firstName = s[0]
+         this.lastName = s[1]
+       }
+     }
+   },
+   methods: {
+     update: function () {
+       this.$vm('sub1').setTitle('Updated');
+     },
+     getTitle: function () {
+       return 'Weex Team'
+     },
+     changeName:function () {
+     this.firstName=(this.firstName==='John')?'Terry':'John'
+     },
+     toggle:function () {
+       this.shown = !this.shown
+     },
+     back2Top: function () {
+      var el = this.$el('goto-top')
+      dom.scrollToElement(el, { offset: 10 })
+    },
+    test: function (e) {
+        this.$vm('sub3').$emit(
+          'changeImage',
+          'https://gtms02.alicdn.com/tps/i2/TB1QHKjMXXXXXadXVXX20ySQVXX-512-512.png'
+        )
+      }
+   },
+   created: function() {
+     this.datetime = new Date().toLocaleString();
+     this.$on('notify', function(event) {
+       this.eventType = event.type;
+       this.eventDetail = event.detail;
+     });
+   },
+   ready: function() {
+     this.word = 'Data changes';
+     this.list.unshift({ id: 44, gender: 'female', nickname: 'Han Meimei' });
+   }
+  }
+</script>

@@ -1,0 +1,25 @@
+<template>
+    <div style="height:100;background-color: {{color}};" ontouchstart="handleTouchstart"
+     ontouchend="handleTouchend" ontouchmove="handleTouchmove" ></div>
+</template>
+<style>
+
+</style>
+<script>
+module.exports = {
+    data:{
+      color:'red'
+    },
+    methods: {
+        handleTouchstart: function(eventProperties) {
+          this.color='olive'
+        },
+        handleTouchend:function(eventProperties) {
+          this.color='red'
+        },
+        handleTouchmove:function(eventProperties) {
+          this.color='yellow'
+        },
+    }
+}
+</script>

@@ -1,0 +1,14 @@
+<template>
+  <foo-list list="{{list}}"></foo-list>
+</template>
+<script>
+  module.exports = {
+    data: {
+      list: [
+        {text: 'figure 1', img: 'http://preview.quanjing.com/fod_liv002/fo-11171537.jpg'},
+        {text: 'figure 2', img: '/1.jpg'},
+        {text: 'figure 3', img: 'http://preview.quanjing.com/fod_liv002/fo-11171537.jpg'},
+      ]
+    }
+  }
+</script>

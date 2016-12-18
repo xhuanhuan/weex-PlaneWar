@@ -1,0 +1,21 @@
+<template>
+  <div>
+    <image if="imageUrl" src="{{imageUrl}}" class="thumb"></image>
+    <text>Foo</text>
+  </div>
+</template>
+<style>
+  .thumb { width: 200; height: 200; }
+</style>
+<script>
+  module.exports = {
+    data: {
+      imageUrl: ''
+    },
+    created: function() {
+      this.$on('changeImage', function (e) {
+        this.imageUrl = e.detail
+      }.bind(this))
+    }
+  }
+</script>
