@@ -1,0 +1,51 @@
+<template>
+    <div id="test" style="background-color:{{color}};left:{{left}};bottom:{{bottom}};" index="{{index}}" class="show" >
+       <image src="{{imgurl}}" style="width:50;height:50;"></image>
+    </div>
+</template>
+
+<style>
+  .show {
+   position:fixed;
+   width:50;
+   height:50;
+   opacity:1;
+   /*background: url('https://raw.githubusercontent.com/xhuanhuan/My-multiplayer-blog/master/enermy1.jpg');
+   background-size:contain;*/
+    }
+  .hide{
+    width:50;
+    height:50;
+    position:fixed;
+    opacity:1;
+    /*background: url('https://raw.githubusercontent.com/xhuanhuan/My-multiplayer-blog/master/explore.jpg');
+    background-size:contain;
+    opacity:1;*/
+  }
+</style>
+
+<script>
+var animation = require('@weex-module/animation');
+  module.exports = {
+    data: {
+      imgurl: 'https://raw.githubusercontent.com/xhuanhuan/My-multiplayer-blog/master/enermy1.jpg',
+      color:'black',
+      left:'',
+      bottom:'',
+      index:'',
+    },
+    created:function(){
+      this.$on('hit',function(e){
+        this.imgurl='https://raw.githubusercontent.com/xhuanhuan/My-multiplayer-blog/master/explore.jpg';
+        var testEl = this.$el('test');
+        animation.transition(testEl,{
+           styles:{
+             opacity:0
+           },
+           duration: 2000, //ms
+           delay: 0 //ms
+         });
+      });
+     }
+  }
+</script>

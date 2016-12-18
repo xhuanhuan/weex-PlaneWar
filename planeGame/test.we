@@ -1,0 +1,39 @@
+<template>
+  <div class="game-board" onpanmove="handlepanmove">
+    <myplane imgurl="{{imageUrl}}" left="{{left}}"></myplane>
+  </div>
+</template>
+
+<style>
+  .game-board {
+    position:fixed;
+    top:0;
+    left:0;
+    bottom:0;
+    right:0;
+    background-color:black ;
+  }
+</style>
+
+<script>
+  module.exports = {
+    data: {
+      imageUrl: 'https://raw.githubusercontent.com/xhuanhuan/My-multiplayer-blog/master/41.jpg',
+      color:'red',
+      left:335
+    },
+    methods:{
+      handlepanmove:function(event){
+        console.log(event.changedTouches[0].screenX);
+        var temp=event.changedTouches[0].screenX;
+        if(temp<=0){
+          this.left=0;
+        }else if(temp>=670){
+          this.left=670;
+        }else{
+          this.left=temp;
+        }
+      }
+    }
+  }
+</script>

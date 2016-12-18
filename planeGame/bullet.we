@@ -1,0 +1,35 @@
+<template>
+    <div style=" background-color:{{backcolor}};left:{{left}};bottom:{{bottom}};" class="{{classname}}" >
+       <image src="{{imgurl}}" style="width:45;height:30;"></image>
+    </div>
+</template>
+
+<style>
+  .show {
+   width:45;
+   height:30;
+   position:fixed;
+   opacity:1;
+   /*background: url('https://raw.githubusercontent.com/xhuanhuan/My-multiplayer-blog/master/bullet.jpg');
+   background-size:contain;*/
+
+    }
+    .hide{
+      width:45;
+      height:30;
+      position:fixed;
+      opacity:0;
+    }
+</style>
+
+<script>
+  module.exports = {
+    data: {
+      backcolor:'black',
+      left:'',
+      bottom:'',
+      classname:'',
+      imgurl:'https://raw.githubusercontent.com/xhuanhuan/My-multiplayer-blog/master/bullet.jpg'
+    },
+  }
+</script>

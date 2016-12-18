@@ -1,0 +1,300 @@
+<template>
+  <div class="game-board" onpanmove="handlepanmove">
+
+    <bullet repeat="(index1,item1) in bulletlist"  track-by="index" left="{{item1.left}}" bottom="{{item1.bottom}}" classname="{{item1.classname}}" ></bullet>
+
+    <enermy-plane  repeat="(index2,item2) in enermylist" id="enermy-{{item2.index}}" track-by="index" left="{{item2.left}}" bottom="{{item2.bottom}}" index="{{item2.index}}" hit="{{item2.hit}}"></enermy-plane>
+
+    <myplane id="myplane" classname="{{myclassname}}" left="{{left}}"></myplane>
+
+
+    <div if="Showstart" class="start" style="background-color:{{color1}}" onTouchstart="handleStart" >
+      <text style="font-size:30;color:white;">start</text>
+    </div>
+    <div if="Showend" class="end" style="background-color:{{color2}}"   onTouchstart="handleEnd">
+      <text style="font-size:30;color:white;" >end</text>
+    </div>
+
+    <div class="addscore" id="addscore" style="bottom:{{addscorebottom}};left:{{addscoreleft}}">
+      <text style="font-size:30;color:white;">+100</text>
+    </div>
+
+    <div class="score">
+      <text style="font-size:30;color:white;">Score: {{score}}</text>
+      <text style="font-size:30;color:white;">Hit rate: {{hitrate}}</text>
+    </div>
+
+    <div id="dialog" class="dialog" if="{{isShowDialog}}">
+      <div class="dialog-backdrop"></div>
+      <div class="dialog-content">
+        <div class="dialog-header">
+          <text class="dialog-title" style="font-size: 60;color:white;">Game Over</text>
+          <text class="close" onTouchstart="closeDialog">×</text>
+        </div>
+        <div class="dialog-body">
+          <text style="font-size: 40;color:white;">当前得分：{{score}}</text>
+          <text style="font-size: 40;color:white;">命中率：{{hitrate}}</text>
+        </div>
+        <div class="dialog-footer">
+          <text style="font-size: 40;color:white;">{{comments}}</text>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style>
+  .game-board {
+    position:fixed;
+    top:0;
+    left:0;
+    bottom:0;
+    right:0;
+    background-color:black ;
+  }
+  .start{
+    width:100;
+    height:50;
+    position:fixed;
+    left:0;
+    bottom:0;
+    text-align: center;
+    border-radius: 5px;
+  }
+  .end{
+    width:100;
+    height:50;
+    position:fixed;
+    right:0;
+    bottom:0;
+    text-align: center;
+    border-radius: 5px;
+  }
+  .addscore{
+    width:100;
+    height:50;
+    position:fixed;
+    opacity:1;
+  }
+  .score{
+    position:fixed;
+    top:10;
+    left:0;
+  }
+  .dialog-backdrop {
+    opacity: .5;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: white;
+  }
+  .dialog {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    justify-content: center;
+    align-items: center;
+  }
+  .dialog-content {
+    width: 450;
+    position: relative;
+    background-color: orange;
+    text-align: center;
+  }
+  .dialog-header {
+    padding: 20;
+    position: relative;
+    border-bottom-width: 1;
+    border-bottom-style: solid;
+    border-bottom-color: #efefef;
+  }
+  .dialog-body {
+    padding: 20;
+  }
+  .dialog-footer {
+    padding: 20;
+    position: relative;
+    border-top-width: 1;
+    border-top-style: solid;
+    border-top-color: #efefef;
+  }
+  .close {
+    font-size: 50;
+    position: absolute;
+    right: 10;
+    top: 10;
+  }
+  .btn {
+    text-align: center;
+    color: #ffffff;
+    padding: 12;
+    background-color: #3071a9;
+    border-color: #285e8e;
+    border-radius: 4px;
+  }
+</style>
+
+<script>
+var animation = require('@weex-module/animation');
+var timer1;
+var timer2;
+var timer3;
+var timer4;
+var index1=0;
+var index2=0;
+  module.exports = {
+    data: {
+      myclassname: 'show',
+      color1:'orange',
+      color2:'navy',
+      left:335,
+      bulletlist:[],
+      enermylist:[],
+      score:0,
+      hitrate:0,
+      isShowDialog:false,
+      dialogTitle: 'HELLO',
+      dialogBody: 'Weex is best!',
+      comments:'',
+      Showstart:true,
+      Showend:false,
+      addscorebottom:-100,
+      addscoreleft:-100
+    },
+    methods:{
+      handlepanmove:function(event){
+        var temp=event.changedTouches[0].screenX;
+        if(temp<=0){
+          this.left=0;
+        }else if(temp>=670){
+          this.left=670;
+        }else{
+          this.left=temp;
+        }
+      },
+      handleEnd:function(){
+        clearInterval(timer1);
+        clearInterval(timer2);
+        clearInterval(timer3);
+        clearInterval(timer4);
+        this.color2='red';
+        this.isShowDialog=true;
+        this.left=335;
+         this.Showend=false;
+         this.addscoreleft=-100;
+        this.addscorebottom=-100;
+        if(this.hitrate<0.5){
+          this.comments="下次用心点";
+        }
+        else if(this.hitrate>=0.5&&this.hitrate<0.8){
+          this.comments="再接再厉";
+        }
+        else {
+          this.comments="真棒！真棒！";
+        }
+
+      },
+      handleStart:function(){
+       this.Showstart=false;
+       this.color1='red';
+       this.bulletlist=[];
+       this.enermylist=[];
+       this.score=0;
+       this.hitrate=0;
+       this.isShowDialog=false;
+       this.left=335;
+       this.Showend=true;
+       index1=0;
+       index2=0;
+
+       timer4=setInterval(function(){
+         this.bulletlist=this.bulletlist.filter(function(item){
+           item.bottom+=10;
+           return item.bottom<1350;
+         });
+         this.enermylist=this.enermylist.filter(function(item){
+           item.bottom-=10;
+           return item.bottom>-70;
+         });
+       }.bind(this),30);
+
+
+
+       timer1=setInterval(function(){
+         this.bulletlist.push({'index':index1++,'left':this.left+25,'bottom':100,'classname':'show'});
+       }.bind(this),500);
+       timer2=setInterval(function(){
+         this.enermylist.push({'index':index2++,'left':Math.floor(Math.random()*700)+25,'bottom':1200,'hit':false});
+         this.hitrate=(this.score/index2/100).toFixed(2);
+       }.bind(this),1000);
+
+
+       timer3=setInterval(function(){
+       for(var j=0;j<this.enermylist.length;j++){
+           var success=0;
+         for( var i=0;i<this.bulletlist.length;i++){
+             var s=this.enermylist[j].left<this.bulletlist[i].left+30&&this.enermylist[j].left+50>this.bulletlist[i].left&&this.enermylist[j].bottom<=this.bulletlist[i].bottom+30&&this.enermylist[j].bottom+50>this.bulletlist[i].bottom;
+          //hit
+             if(s&&this.bulletlist[i].classname=='show'&&!this.enermylist[j].hit){
+                 this.bulletlist[i].classname='hide';
+                 this.enermylist[j].hit=true;
+                 this.$vm('enermy-'+this.enermylist[j].index).$emit('hit',{index:this.enermylist[j].index});
+                 this.score+=100;
+                 this.hitrate=(this.score/index2/100).toFixed(2);
+
+                 this.addscoreleft=this.enermylist[j].left;
+                this.addscorebottom=this.enermylist[j].bottom+100;
+                setTimeout(function(){
+                  this.addscoreleft=-100;
+                 this.addscorebottom=-100;
+               }.bind(this),100);
+             }
+         }
+         //end
+         if(!this.enermylist[j].hit&&this.enermylist[j].left>this.left-50&&this.enermylist[j].left<this.left+80&&this.enermylist[j].bottom<80){
+           this.myclassname='hide';
+           clearInterval(timer1);
+           clearInterval(timer2);
+           clearInterval(timer3);
+           clearInterval(timer4);
+           this.color2='red';
+           this.isShowDialog=true;
+            this.Showend=false;
+            this.addscoreleft=-100;
+           this.addscorebottom=-100;
+           if(this.hitrate<0.5){
+             this.comments="下次用心点";
+           }
+           else if(this.hitrate>=0.5&&this.hitrate<0.8){
+             this.comments="再接再厉";
+           }
+           else {
+             this.comments="真棒！真棒！";
+           }
+           this.$vm('myplane').$emit('explore');
+         }
+       }
+     }.bind(this),100);
+
+     },
+
+     closeDialog: function (e) {
+       clearInterval(timer4);
+       this.isShowDialog = false;
+       this.score=0;
+       this.hitrate=0;
+       this.color1='orange';
+       this.color2='navy';
+       this.bulletlist=[];
+       this.enermylist=[];
+       this.myclassname='show';
+       this.left=335;
+       this.Showstart=true;
+     }
+    }
+  }
+</script>
