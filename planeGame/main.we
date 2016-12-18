@@ -142,10 +142,10 @@
 var animation = require('@weex-module/animation');
 var timer1;
 var timer2;
-var timer3;
-var timer4;
+var timer;
 var index1=0;
 var index2=0;
+var temp=0;var temp2=0;
   module.exports = {
     data: {
       myclassname: 'show',
@@ -179,8 +179,6 @@ var index2=0;
       handleEnd:function(){
         clearInterval(timer1);
         clearInterval(timer2);
-        clearInterval(timer3);
-        clearInterval(timer4);
         this.color2='red';
         this.isShowDialog=true;
         this.left=335;
@@ -211,7 +209,7 @@ var index2=0;
        index1=0;
        index2=0;
 
-       timer4=setInterval(function(){
+       timer1=setInterval(function(){
          this.bulletlist=this.bulletlist.filter(function(item){
            item.bottom+=10;
            return item.bottom<1350;
@@ -222,18 +220,8 @@ var index2=0;
          });
        }.bind(this),30);
 
-
-
-       timer1=setInterval(function(){
-         this.bulletlist.push({'index':index1++,'left':this.left+25,'bottom':100,'classname':'show'});
-       }.bind(this),500);
        timer2=setInterval(function(){
-         this.enermylist.push({'index':index2++,'left':Math.floor(Math.random()*700)+25,'bottom':1200,'hit':false});
-         this.hitrate=(this.score/index2/100).toFixed(2);
-       }.bind(this),1000);
-
-
-       timer3=setInterval(function(){
+         temp++; temp2++;
        for(var j=0;j<this.enermylist.length;j++){
            var success=0;
          for( var i=0;i<this.bulletlist.length;i++){
@@ -242,25 +230,24 @@ var index2=0;
              if(s&&this.bulletlist[i].classname=='show'&&!this.enermylist[j].hit){
                  this.bulletlist[i].classname='hide';
                  this.enermylist[j].hit=true;
+                 clearTimeout(timer);
+                 this.addscoreleft=this.enermylist[j].left;
+                 this.addscorebottom=this.enermylist[j].bottom+50;
                  this.$vm('enermy-'+this.enermylist[j].index).$emit('hit',{index:this.enermylist[j].index});
                  this.score+=100;
                  this.hitrate=(this.score/index2/100).toFixed(2);
-
-                 this.addscoreleft=this.enermylist[j].left;
-                this.addscorebottom=this.enermylist[j].bottom+100;
-                setTimeout(function(){
+                 timer=setTimeout(function(){
                   this.addscoreleft=-100;
                  this.addscorebottom=-100;
-               }.bind(this),100);
+               }.bind(this),300);
+               break;
              }
          }
-         //end
+         //die
          if(!this.enermylist[j].hit&&this.enermylist[j].left>this.left-50&&this.enermylist[j].left<this.left+80&&this.enermylist[j].bottom<80){
            this.myclassname='hide';
            clearInterval(timer1);
            clearInterval(timer2);
-           clearInterval(timer3);
-           clearInterval(timer4);
            this.color2='red';
            this.isShowDialog=true;
             this.Showend=false;
@@ -278,12 +265,24 @@ var index2=0;
            this.$vm('myplane').$emit('explore');
          }
        }
-     }.bind(this),100);
+
+       //产生子弹和敌机
+       if(temp===6){
+         temp=0;
+         this.bulletlist.push({'index':index1++,'left':this.left+25,'bottom':100,'classname':'show'});
+      }
+       if(temp2===12){
+          temp2=0;
+          this.enermylist.push({'index':index2++,'left':Math.floor(Math.random()*700)+25,'bottom':1200,'hit':false});
+          this.hitrate=(this.score/index2/100).toFixed(2);
+       }
+     }.bind(this),50);
 
      },
 
      closeDialog: function (e) {
-       clearInterval(timer4);
+       clearInterval(timer1);
+       clearInterval(timer2);
        this.isShowDialog = false;
        this.score=0;
        this.hitrate=0;
@@ -294,6 +293,8 @@ var index2=0;
        this.myclassname='show';
        this.left=335;
        this.Showstart=true;
+       temp=0;
+       temp2=0;
      }
     }
   }
